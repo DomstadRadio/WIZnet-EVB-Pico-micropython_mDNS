@@ -6,7 +6,7 @@ This repository was originally created to provide **MicroPython support for the 
 However, development has since moved to a new repository, which now actively supports the latest boards and features.
 
 👉 Please use the new repository instead:  
-**[WIZnet-EVB-Pico-micropython](https://github.com/Wiznet/WIZnet-EVB-Pico-micropython)**
+**[WIZnet-EVB-Pico-micropython](https://github.com/WIZnet-ioNIC/WIZnet-EVB-Pico-micropython)**
 
 ---
 
