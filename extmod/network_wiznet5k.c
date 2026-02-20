@@ -88,6 +88,15 @@ extern const mp_obj_type_t mod_network_nic_type_wiznet5k;
 #define MICROPY_HW_WIZNET_SPI_BAUDRATE  (2000000)
 #endif
 
+// MICROPY_HW_WIZNET_MAC_FILTER enables the MACRAW MAC filter (Sn_MR_MFEN) on socket 0,
+// which restricts received frames to those destined for the board's own MAC address or
+// broadcast. This reduces lwIP load but blocks multicast frames needed by protocols
+// such as mDNS (224.0.0.251/5353) and SSDP, so it defaults to disabled (0).
+// Set to 1 in your board config to re-enable filtering (not recommended if mDNS is needed).
+#ifndef MICROPY_HW_WIZNET_MAC_FILTER
+#define MICROPY_HW_WIZNET_MAC_FILTER    (0)
+#endif
+
 #ifndef WIZCHIP_SREG_ADDR
 #if (_WIZCHIP_ == 5500)
 #define WIZCHIP_SREG_ADDR(sn, addr)    (_W5500_IO_BASE_ + (addr << 8) + (WIZCHIP_SREG_BLOCK(sn) << 3))
@@ -308,8 +317,13 @@ static err_t wiznet5k_netif_init(struct netif *netif) {
         return ERR_IF;
     }
 
-    // Enable MAC filtering so we only get frames destined for us, to reduce load on lwIP
+    // Optionally enable MAC filtering to restrict received frames to those destined for
+    // this board's MAC or broadcast, which reduces lwIP load. Disabled by default because
+    // it blocks multicast frames required by mDNS (224.0.0.251/5353), SSDP, and similar
+    // protocols. Set MICROPY_HW_WIZNET_MAC_FILTER=1 in your board config to enable.
+    #if MICROPY_HW_WIZNET_MAC_FILTER
     setSn_MR(0, getSn_MR(0) | Sn_MR_MFEN);
+    #endif
 
     #if LWIP_IPV6
     netif->output_ip6 = ethip6_output;
