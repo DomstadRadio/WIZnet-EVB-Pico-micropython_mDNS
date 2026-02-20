@@ -29,7 +29,7 @@ jobs:
         working-directory: ports/rp2
         run: |
           make submodules
-          make BOARD=W6300_EVB_PICO2 -j
+          make BOARD=RPI_PICO2 -j
 
       - name: Collect UF2 outputs
         run: |
